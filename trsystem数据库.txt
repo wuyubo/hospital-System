@@ -1,0 +1,132 @@
+CREATE DATABASE trsystem
+
+1、医生信息（ID、编号、姓名、性别、出生年月、现任职位、主治科、管理员权限：是/否、个人简历、治疗次数、入职日期、登录密码）
+
+CREATE TABLE doctorinf
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	did	 CHAR(10)    NOT NULL UNIQUE DEFAULT'',
+	dname	 VARCHAR(20) NOT NULL DEFAULT'',
+	dsex	 VARCHAR(2)  NOT NULL DEFAULT'男',
+	dbirth	 VARCHAR(7)  NOT NULL DEFAULT'1990/01',
+	dpost	 VARCHAR(10) NOT NULL DEFAULT'医生',
+	ddepart	 VARCHAR(10) NOT NULL DEFAULT'外科',
+	dright	 VARCHAR(3)  NOT NULL DEFAULT'no',
+	dresume	 TEXT,
+	dpasswa  VARCHAR(6)  NOT NULL DEFAULT'123456',
+	dcount    INT,
+	didate   INT,
+	dpay	 INT,
+	picdress  TEXT,
+	
+	PRIMARY KEY(id,did),
+)
+
+2、医生看病记录（ID、医生编号、治疗日期、病人身份证号、确诊病、治疗药单）
+
+CREATE TABLE doctorhis
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	did	 CHAR(10)    NOT NULL DEFAULT'',
+	ddate	 CHAR(8)     NOT NULL DEFAULT'20150101',
+	pid	 VARCHAR(18) NOT NULL DEFAULT'440982199303295753',
+	pdid	 VARCHAR(18) NOT NULL DEFAULT'',
+	pdmedi	 TEXT, 
+	PRIMARY KEY(id),
+	FOREIGN KEY(did) REFERENCES doctorinf(did),
+	FOREIGN KEY(pid) REFERENCES patientinf(pid),
+	FOREIGN KEY(pdid) REFERENCES disease(did)
+)
+
+3、病库（ID、编号、名称、类型、严重级别、主要是症状、病例描述、出现次数、录入日期）
+CREATE TABLE disease
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	did	 CHAR(18)    NOT NULL DEFAULT'',
+	dname    VARCHAR(30) NOT NULL DEFAULT'',
+	dtype	 VARCHAR(8)  NOT NULL DEFAULT'外科',
+	drank    VARCHAR(8)  NOT NULL DEFAULT'一般严重',
+	dsymp	 TEXT NOT NULL,
+	ddesc	 TEXT,
+	dcount    INT,
+	didate   INT,
+	PRIMARY KEY(id),
+	FULLTEXT (dname,dsymp)
+)
+4、病人信息（ID、身份证号、姓名、性别、出生年月、过敏药物、重大病史、本院就诊次数、初次就诊日期）
+CREATE TABLE patientinf
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	pid	 VARCHAR(18) NOT NULL DEFAULT'440982199303295753',
+	pname 	 VARCHAR(20) NOT NULL DEFAULT'',
+	psex     CHAR(2)     NOT NULL DEFAULT'男',
+	pbirth	 CHAR(7)     NOT NULL DEFAULT'1990/01',
+	pdrug	 TEXT,
+	pihis	 TEXT,
+	pvip     VARCHAR(3),
+	pcount   INT,
+	pidate   INT,
+	
+	PRIMARY KEY(id,pid),
+	INDEX (pid,pname)
+)
+
+5、个人病历（ID、身份证号、治疗日期、确诊病、服用药物,医生编号）
+CREATE TABLE patienthis
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	pid 	 VARCHAR(18) NOT NULL DEFAULT'440982199303295753',
+	ddate	 CHAR(8)     NOT NULL DEFAULT'20150101',
+	pdid	 VARCHAR(18) NOT NULL DEFAULT'',
+	pdmedi	 TEXT NOT NULL,
+	dname	 VARCHAR(20),
+	did	 CHAR(10)    NOT NULL DEFAULT'',
+	PRIMARY KEY(id),
+	FOREIGN KEY(did) REFERENCES doctorinf(did),
+	FOREIGN KEY(pid) REFERENCES patientinf(pid),
+	FOREIGN KEY(pdid) REFERENCES disease(did)
+	INDEX (pid,pname)
+)
+
+6、药仓（ID、药物编号、药物名称、药物类型、药服用方法、药物描述、药物单价、药物数量、出库数量、录入日期）
+CREATE TABLE medicines
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	mid	 VARCHAR(18) NOT NULL UNIQUE DEFAULT'',
+	mname 	 VARCHAR(30) NOT NULL DEFAULT'',
+	mtype	 VARCHAR(8)  NOT NULL DEFAULT'外科',
+	musage	 VARCHAR(8)  NOT NULL DEFAULT'外用',
+	mdesc	 TEXT,
+	mprice	 INT         NOT NULL DEFAULT'1',
+	mcount	 INT         NOT NULL DEFAULT'100',
+	mecount  INT,
+	midate	 INT,
+	PRIMARY KEY(id,mid),
+	INDEX (mid,mname)
+)
+
+7、治疗方案（ID、病例编号、治疗药单、治疗建议）
+CREATE TABLE trprojects
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	pdid	 VARCHAR(30) NOT NULL DEFAULT'',
+	tdmedi	 TEXT NOT NULL,
+	tsugg	 TEXT,
+	PRIMARY KEY(id),
+	FOREIGN KEY(pdid) REFERENCES disease(did).
+)
+8、挂号表（ID、挂号、日期、身份证号、是否复诊）
+CREATE TABLE hungnum
+(
+	id	 INT         NOT NULL AUTO_INCREMENT,
+	hnum     INT	     NOT NULL ,
+	date	 INT	     NOT NULL,
+	pid	 VARCHAR(18) NOT NULL DEFAULT'440982199303295753',
+	hret	 VARCHAR(3),
+	PRIMARY KEY(id),
+	FOREIGN KEY(pid) REFERENCES patientinf(pid),
+	INDEX (date,pid)	 
+)
+//////////////////////////////////////////////////////
+INSERT INTO doctorinf
+	VALUES(NULL,'3113001629','吴玉波','男','1993/03','院长','外科','yes','2015.1.25任本院院长','123456','201501','0','10000',' ')
